@@ -13,7 +13,7 @@ const API_BASE_URL = '';
 
 // Wompi Configuration - Replace with your public key
 // Sandbox: pub_test_XXXXXXXX | Production: pub_prod_XXXXXXXX
-const WOMPI_PUBLIC_KEY = 'pub_test_XXXXXXXXXXXXXXXXXXXXXXXX';
+const WOMPI_PUBLIC_KEY = 'pub_test_qK2KWQOsW6WSr2IycRPwZcOeif1amNtl';
 
 // Currency: COP for Colombian Pesos
 const WOMPI_CURRENCY = 'COP';
