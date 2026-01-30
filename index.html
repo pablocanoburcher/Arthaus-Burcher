@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARTHAUS | Curated Music Art Prints</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Wompi Widget for Colombian payments (Cards, PSE, Nequi, Daviplata) -->
+    <script type="text/javascript" src="https://checkout.wompi.co/widget.js"></script>
+    <!-- PayPal SDK for international payments -->
+    <script src="https://www.paypal.com/sdk/js?client-id=4JSB9XZAPLL5U&currency=USD&enable-funding=venmo&components=buttons" data-sdk-integration-source="button-factory"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo" onclick="showPage('home')">ARTHAUS</a>
+            <div class="nav-links">
+                <a href="#" class="nav-link" data-page="catalogue" onclick="showPage('catalogue')" data-en="CATALOGUE" data-es="CATÁLOGO">CATALOGUE</a>
+                <a href="#" class="nav-link" data-page="about" onclick="showPage('about')" data-en="ABOUT" data-es="NOSOTROS">ABOUT</a>
+                <a href="#" class="nav-link" data-page="personalized" onclick="showPage('personalized')" data-en="PERSONALIZED" data-es="PERSONALIZADO">PERSONALIZED</a>
+                <a href="#" class="nav-link" data-page="contact" onclick="showPage('contact')" data-en="CONTACT" data-es="CONTACTO">CONTACT</a>
+                <a href="#" class="nav-link" data-page="refunds" onclick="showPage('refunds')" data-en="REFUNDS" data-es="DEVOLUCIONES">REFUNDS</a>
+            </div>
+            <div class="nav-actions">
+                <!-- Language Toggle -->
+                <button class="lang-toggle" id="langToggle" onclick="toggleLanguage()" title="Switch Language">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                    <span id="langLabel">EN</span>
+                </button>
+                <button class="cart-btn" id="cartBtn" onclick="openCartModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#" onclick="showPage('catalogue'); closeMobileMenu()" data-en="CATALOGUE" data-es="CATÁLOGO">CATALOGUE</a>
+        <a href="#" onclick="showPage('about'); closeMobileMenu()" data-en="ABOUT" data-es="NOSOTROS">ABOUT</a>
+        <a href="#" onclick="showPage('personalized'); closeMobileMenu()" data-en="PERSONALIZED" data-es="PERSONALIZADO">PERSONALIZED</a>
+        <a href="#" onclick="showPage('contact'); closeMobileMenu()" data-en="CONTACT" data-es="CONTACTO">CONTACT</a>
+        <a href="#" onclick="showPage('refunds'); closeMobileMenu()" data-en="REFUNDS" data-es="DEVOLUCIONES">REFUNDS</a>
+    </div>
+
+    <!-- ==================== HOME PAGE ==================== -->
+    <main id="page-home" class="page active">
+        <!-- Hero Section -->
+        <header class="hero">
+            <div class="hero-content">
+                <p class="hero-subtitle" data-en="Curated Art Prints" data-es="Arte Curado en Impresión">Curated Art Prints</p>
+                <h1 class="hero-title" data-html data-en="Music Meets<br><em>Visual Art</em>" data-es="La Música se Encuentra con<br><em>el Arte Visual</em>">Music Meets<br><em>Visual Art</em></h1>
+                <p class="hero-description" data-en="Limited edition prints celebrating iconic artists through minimalist design" data-es="Impresiones de edición limitada que celebran artistas icónicos a través del diseño minimalista">Limited edition prints celebrating iconic artists through minimalist design</p>
+                <a href="#" class="hero-cta" onclick="showPage('catalogue')" data-en="Explore Collection" data-es="Explorar Colección">Explore Collection</a>
+            </div>
+            <div class="hero-scroll">
+                <span data-en="Scroll" data-es="Desliza">Scroll</span>
+                <div class="scroll-line"></div>
+            </div>
+        </header>
+
+        <!-- Featured Section -->
+        <section class="featured-section">
+            <div class="section-header">
+                <p class="section-subtitle" data-en="Featured" data-es="Destacados">Featured</p>
+                <h2 class="section-title" data-en="Latest Releases" data-es="Últimos Lanzamientos">Latest Releases</h2>
+            </div>
+            <div class="featured-grid" id="featuredGrid">
+                <!-- Featured products loaded by JS -->
+            </div>
+            <div class="section-cta">
+                <a href="#" class="btn-outline" onclick="showPage('catalogue')" data-en="View All Designs" data-es="Ver Todos los Diseños">View All Designs</a>
+            </div>
+        </section>
+
+        <!-- About Preview -->
+        <section class="about-preview">
+            <div class="about-preview-container">
+                <div class="about-preview-content">
+                    <p class="section-subtitle" data-en="About the Studio" data-es="Sobre el Estudio">About the Studio</p>
+                    <h2 class="section-title" data-html data-en="Where Music<br><em>Becomes Art</em>" data-es="Donde la Música<br><em>se Vuelve Arte</em>">Where Music<br><em>Becomes Art</em></h2>
+                    <p class="about-text" data-en="Each piece in this collection is a tribute to the artists who have shaped modern music. Using a distinctive palette and minimalist approach, these prints capture the essence of iconic albums and performances." data-es="Cada pieza de esta colección es un tributo a los artistas que han moldeado la música moderna. Usando una paleta distintiva y un enfoque minimalista, estas impresiones capturan la esencia de álbumes y presentaciones icónicas.">
+                        Each piece in this collection is a tribute to the artists who have shaped modern music.
+                        Using a distinctive palette and minimalist approach, these prints capture the essence
+                        of iconic albums and performances.
+                    </p>
+                    <a href="#" class="btn-text" onclick="showPage('about')" data-html data-en="Learn More &rarr;" data-es="Conoce Más &rarr;">Learn More &rarr;</a>
+                </div>
+                <div class="about-preview-stats">
+                    <div class="stat">
+                        <span class="stat-number">100+</span>
+                        <span class="stat-label" data-en="Designs" data-es="Diseños">Designs</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">5K+</span>
+                        <span class="stat-label" data-en="Happy Collectors" data-es="Coleccionistas Felices">Happy Collectors</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">50+</span>
+                        <span class="stat-label" data-en="Countries" data-es="Países">Countries</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==================== ABOUT PAGE ==================== -->
+    <main id="page-about" class="page">
+        <section class="page-header">
+            <h1 class="page-title"><em data-en="THE HUMAN FREQUENCY" data-es="LA FRECUENCIA HUMANA">THE HUMAN FREQUENCY</em></h1>
+            <div class="title-underline"></div>
+        </section>
+
+        <section class="about-section">
+            <div class="about-content">
+                <p class="about-main-text" data-en="No prompts, just pixels. Born in the creative heart of Medellín, Arthaus Burcher is all about original music-inspired art. Every layout is built manually using digital design software—zero generative AI, 100% human vision. We're blending digital precision with Colombian soul to bring you high-fidelity art that actually has a pulse. Real vision for real fans." data-es="Sin prompts, solo píxeles. Nacido en el corazón creativo de Medellín, Arthaus Burcher se trata de arte original inspirado en la música. Cada diseño está construido manualmente usando software de diseño digital—cero inteligencia artificial generativa, 100% visión humana. Estamos mezclando precisión digital con alma colombiana para traerte arte de alta fidelidad que realmente tiene pulso. Visión real para fans reales.">
+                    No prompts, just pixels. Born in the creative heart of Medellín, Arthaus Burcher is all about original music-inspired art. Every layout is built manually using digital design software—zero generative AI, 100% human vision. We're blending digital precision with Colombian soul to bring you high-fidelity art that actually has a pulse. Real vision for real fans.
+                </p>
+
+                <div class="about-values">
+                    <div class="value-item">
+                        <div class="value-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                                <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                                <path d="M2 2l7.586 7.586"></path>
+                                <circle cx="11" cy="11" r="2"></circle>
+                            </svg>
+                        </div>
+                        <h3 data-en="100% Human-Made" data-es="100% Hecho por Humanos">100% Human-Made</h3>
+                        <p data-en="Every design crafted by hand, pixel by pixel" data-es="Cada diseño hecho a mano, píxel por píxel">Every design crafted by hand, pixel by pixel</p>
+                    </div>
+                    <div class="value-item">
+                        <div class="value-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                            </svg>
+                        </div>
+                        <h3 data-en="Music-Inspired" data-es="Inspirado en la Música">Music-Inspired</h3>
+                        <p data-en="Art that captures the soul of sound" data-es="Arte que captura el alma del sonido">Art that captures the soul of sound</p>
+                    </div>
+                    <div class="value-item">
+                        <div class="value-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </div>
+                        <h3 data-en="Colombian Soul" data-es="Alma Colombiana">Colombian Soul</h3>
+                        <p data-en="Born in Medellín, made for the world" data-es="Nacido en Medellín, hecho para el mundo">Born in Medellín, made for the world</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==================== CATALOGUE PAGE ==================== -->
+    <main id="page-catalogue" class="page">
+        <section class="page-header">
+            <h1 class="page-title"><em data-en="Designs" data-es="Diseños">Designs</em></h1>
+            <p class="page-description" data-en="Browse our complete collection of limited edition art prints" data-es="Explora nuestra colección completa de impresiones de edición limitada">Browse our complete collection of limited edition art prints</p>
+        </section>
+
+        <section class="catalogue-section">
+            <div class="catalogue-filters">
+                <button class="filter-btn active" data-filter="all" data-en="All" data-es="Todos">All</button>
+                <button class="filter-btn" data-filter="hip-hop">Hip-Hop</button>
+                <button class="filter-btn" data-filter="rnb">R&B</button>
+                <button class="filter-btn" data-filter="misc" data-en="Miscellaneous" data-es="Varios">Miscellaneous</button>
+            </div>
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- Products will be injected here by JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <!-- ==================== PERSONALIZED PAGE ==================== -->
+    <main id="page-personalized" class="page">
+        <section class="page-header">
+            <h1 class="page-title"><em data-en="Bespoke Design" data-es="Diseño a Medida">Bespoke Design</em></h1>
+            <p class="page-description" data-en="Your memories, our aesthetic. Create a custom piece that fits your space perfectly." data-es="Tus memorias, nuestra estética. Crea una pieza personalizada que encaje perfectamente en tu espacio.">Your memories, our aesthetic. Create a custom piece that fits your space perfectly.</p>
+        </section>
+
+        <section class="personalized-section">
+            <div class="personalized-form-container">
+                <form id="bespokeForm" class="bespoke-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fullName" data-en="FULL NAME" data-es="NOMBRE COMPLETO">FULL NAME</label>
+                            <input type="text" id="fullName" name="fullName" placeholder="Jane Doe" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" data-en="EMAIL ADDRESS" data-es="CORREO ELECTRÓNICO">EMAIL ADDRESS</label>
+                            <input type="email" id="email" name="email" placeholder="jane@example.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="designVision" data-en="DESIGN VISION" data-es="VISIÓN DEL DISEÑO">DESIGN VISION</label>
+                        <textarea id="designVision" name="designVision" rows="5" placeholder="Describe the mood, colors, or specific lyrics/text you want included..." data-en-placeholder="Describe the mood, colors, or specific lyrics/text you want included..." data-es-placeholder="Describe el ambiente, colores o letras/texto específico que quieras incluir..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label data-en="REFERENCE MATERIAL" data-es="MATERIAL DE REFERENCIA">REFERENCE MATERIAL</label>
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <input type="file" id="referenceFiles" name="referenceFiles" multiple accept="image/*" hidden>
+                            <div class="upload-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                            </div>
+                            <p class="upload-text" data-html data-en="Drop files here or <span>browse</span>" data-es="Arrastra archivos aquí o <span>busca</span>">Drop files here or <span>browse</span></p>
+                            <p class="upload-hint" data-en="PNG, JPG up to 10MB each" data-es="PNG, JPG hasta 10MB cada uno">PNG, JPG up to 10MB each</p>
+                        </div>
+                        <div id="fileList" class="file-list"></div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="printSize" data-en="PRINT SIZE" data-es="TAMAÑO DE IMPRESIÓN">PRINT SIZE</label>
+                            <select id="printSize" name="printSize" required>
+                                <option value="" data-en="Select size..." data-es="Selecciona tamaño...">Select size...</option>
+                                <option value="18x24">18" x 24" - $75</option>
+                                <option value="24x36">24" x 36" - $95</option>
+                                <option value="30x40">30" x 40" - $125</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="quantity" data-en="QUANTITY" data-es="CANTIDAD">QUANTITY</label>
+                            <select id="quantity" name="quantity" required>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="5">5</option>
+                                <option value="10">10+</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="additionalNotes" data-en="ADDITIONAL NOTES" data-es="NOTAS ADICIONALES">ADDITIONAL NOTES</label>
+                        <textarea id="additionalNotes" name="additionalNotes" rows="3" placeholder="Timeline requirements, framing preferences, etc..." data-en-placeholder="Timeline requirements, framing preferences, etc..." data-es-placeholder="Requisitos de tiempo, preferencias de enmarcado, etc..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary" data-en="Submit Request" data-es="Enviar Solicitud">Submit Request</button>
+                        <p class="form-note" data-en="We'll respond within 24-48 hours with a quote and timeline." data-es="Responderemos en 24-48 horas con una cotización y cronograma.">We'll respond within 24-48 hours with a quote and timeline.</p>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==================== CONTACT PAGE ==================== -->
+    <main id="page-contact" class="page">
+        <section class="page-header">
+            <h1 class="page-title"><em data-en="Get in Touch" data-es="Contáctanos">Get in Touch</em></h1>
+            <div class="title-underline"></div>
+            <p class="page-description" data-en="We love hearing from fellow art enthusiasts. Whether you have a question about shipping, a custom request, or just want to say hello, we're here." data-es="Nos encanta saber de otros entusiastas del arte. Ya sea que tengas una pregunta sobre envíos, una solicitud personalizada, o simplemente quieras saludar, aquí estamos.">We love hearing from fellow art enthusiasts. Whether you have a question about shipping, a custom request, or just want to say hello, we're here.</p>
+        </section>
+
+        <section class="contact-section">
+            <div class="contact-cards">
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Email</h3>
+                    <a href="mailto:pcanoburcher@gmail.com">pcanoburcher@gmail.com</a>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                    </div>
+                    <h3>Studio</h3>
+                    <p>Medellín, COL</p>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
+                    </div>
+                    <h3>Social</h3>
+                    <a href="https://instagram.com/phillipburcher" target="_blank">@phillipburcher</a>
+                </div>
+            </div>
+
+            <div class="newsletter-section">
+                <p class="newsletter-label">NEWSLETTER</p>
+                <form class="newsletter-form" id="newsletterForm">
+                    <input type="email" placeholder="Enter your email" data-en-placeholder="Enter your email" data-es-placeholder="Ingresa tu correo" required>
+                    <button type="submit" data-en="SUBSCRIBE" data-es="SUSCRIBIRSE">SUBSCRIBE</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==================== REFUNDS PAGE ==================== -->
+    <main id="page-refunds" class="page">
+        <section class="page-header">
+            <h1 class="page-title"><em data-en="Return Policy" data-es="Política de Devoluciones">Return Policy</em></h1>
+        </section>
+
+        <section class="refunds-section">
+            <div class="policy-content">
+                <p class="policy-intro">
+                    <span data-en="At Arthaus, we want you to be completely in love with your new art. If for any reason you are not satisfied, we accept returns within" data-es="En Arthaus, queremos que estés completamente enamorado de tu nuevo arte. Si por alguna razón no estás satisfecho, aceptamos devoluciones dentro de">At Arthaus, we want you to be completely in love with your new art. If for any reason you are not satisfied, we accept returns within</span>
+                    <strong data-en="30 days" data-es="30 días">30 days</strong>
+                    <span data-en="of delivery. To be eligible for a return, your item must be unused and in the same condition that you received it. It must also be in the original packaging." data-es="de la entrega. Para ser elegible para una devolución, tu artículo debe estar sin usar y en las mismas condiciones en que lo recibiste. También debe estar en el empaque original.">of delivery. To be eligible for a return, your item must be unused and in the same condition that you received it. It must also be in the original packaging.</span>
+                </p>
+
+                <div class="policy-block">
+                    <h2 data-en="Damaged Artwork" data-es="Arte Dañado">Damaged Artwork</h2>
+                    <p>
+                        <span data-en="In the unfortunate event that your order arrives damaged, please email us immediately at" data-es="En el desafortunado caso de que tu pedido llegue dañado, por favor envíanos un correo inmediatamente a">In the unfortunate event that your order arrives damaged, please email us immediately at</span>
+                        <a href="mailto:pcanoburcher@gmail.com">pcanoburcher@gmail.com</a>
+                        <span data-en="with photos of the damage and the packaging. We will send out a replacement free of charge as soon as possible." data-es="con fotos del daño y el empaque. Enviaremos un reemplazo sin costo lo antes posible.">with photos of the damage and the packaging. We will send out a replacement free of charge as soon as possible.</span>
+                    </p>
+                </div>
+
+                <div class="policy-block">
+                    <h2 data-en="Custom Orders" data-es="Pedidos Personalizados">Custom Orders</h2>
+                    <p data-en="Due to the bespoke nature of personalized prints, these items are non-refundable unless they arrive damaged or defective. We provide digital proofs for all custom orders to ensure you are happy with the design before printing." data-es="Debido a la naturaleza personalizada de las impresiones a medida, estos artículos no son reembolsables a menos que lleguen dañados o defectuosos. Proporcionamos pruebas digitales para todos los pedidos personalizados para asegurar que estés satisfecho con el diseño antes de imprimir.">
+                        Due to the bespoke nature of personalized prints, these items are non-refundable unless they arrive damaged or defective. We provide digital proofs for all custom orders to ensure you are happy with the design before printing.
+                    </p>
+                </div>
+
+                <div class="policy-block">
+                    <h2 data-en="Refund Process" data-es="Proceso de Reembolso">Refund Process</h2>
+                    <p data-en="Once your return is received and inspected, we will send you an email to notify you that we have received your returned item. If approved, your refund will be processed, and a credit will automatically be applied to your credit card or original method of payment within 10 business days." data-es="Una vez que tu devolución sea recibida e inspeccionada, te enviaremos un correo para notificarte que hemos recibido tu artículo devuelto. Si se aprueba, tu reembolso será procesado, y un crédito será aplicado automáticamente a tu tarjeta de crédito o método de pago original dentro de 10 días hábiles.">
+                        Once your return is received and inspected, we will send you an email to notify you that we have received your returned item. If approved, your refund will be processed, and a credit will automatically be applied to your credit card or original method of payment within 10 business days.
+                    </p>
+                </div>
+
+                <div class="policy-block">
+                    <h2 data-en="Questions?" data-es="¿Preguntas?">Questions?</h2>
+                    <p class="questions-text">
+                        <span data-en="If you have any questions about our return policy, please don't hesitate to" data-es="Si tienes alguna pregunta sobre nuestra política de devoluciones, no dudes en">If you have any questions about our return policy, please don't hesitate to</span>
+                        <a href="#" onclick="showPage('contact')" data-en="contact us" data-es="contactarnos">contact us</a>.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==================== PRODUCT MODAL ==================== -->
+    <div class="modal" id="productModal">
+        <div class="modal-backdrop" onclick="closeProductModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeProductModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+
+            <div class="modal-image-section">
+                <div class="frame-simulation">
+                    <div class="frame-border">
+                        <img src="" alt="" id="modalImage" class="modal-product-image">
+                    </div>
+                    <p class="frame-caption" data-en="Simulated Frame View" data-es="Vista Simulada con Marco">Simulated Frame View</p>
+                </div>
+            </div>
+
+            <div class="modal-info-section">
+                <div class="modal-info-content">
+                    <p class="product-artist" id="modalArtist"></p>
+                    <h2 class="product-title" id="modalTitle"></h2>
+                    <div class="title-divider"></div>
+                    <p class="product-price" id="modalPrice"></p>
+
+                    <p class="product-description" id="modalDescription"></p>
+
+                    <div class="product-dimensions">
+                        <p class="dimensions-label" data-en="Dimensions" data-es="Dimensiones">Dimensions</p>
+                        <p class="dimensions-value" id="modalDimensions"></p>
+                    </div>
+
+                    <div class="product-actions">
+                        <button class="btn-primary" id="addToCartBtn" data-en="Add to Cart" data-es="Agregar al Carrito">Add to Cart</button>
+                        <button class="btn-secondary" data-en="View in Room (AR)" data-es="Ver en Habitación (AR)">View in Room (AR)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== CART MODAL ==================== -->
+    <div class="modal" id="cartModal">
+        <div class="modal-backdrop" onclick="closeCartModal()"></div>
+        <div class="cart-modal-content">
+            <div class="cart-header">
+                <h2 data-en="Your Cart" data-es="Tu Carrito">Your Cart</h2>
+                <button class="modal-close" onclick="closeCartModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="cart-items" id="cartItems">
+                <!-- Cart items rendered by JS -->
+            </div>
+
+            <div class="cart-empty" id="cartEmpty">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+                <p data-en="Your cart is empty" data-es="Tu carrito está vacío">Your cart is empty</p>
+                <button class="btn-outline" onclick="closeCartModal(); showPage('catalogue')" data-en="Browse Collection" data-es="Explorar Colección">Browse Collection</button>
+            </div>
+
+            <div class="cart-footer" id="cartFooter">
+                <div class="cart-subtotal">
+                    <span data-en="Subtotal" data-es="Subtotal">Subtotal</span>
+                    <span id="cartSubtotal">$0.00</span>
+                </div>
+                <p class="cart-note" data-en="Shipping & taxes calculated at checkout" data-es="Envío e impuestos calculados al pagar">Shipping & taxes calculated at checkout</p>
+                <button class="btn-primary" onclick="proceedToCheckout()" data-en="Proceed to Checkout" data-es="Proceder al Pago">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== CHECKOUT MODAL ==================== -->
+    <div class="modal" id="checkoutModal">
+        <div class="modal-backdrop" onclick="closeCheckoutModal()"></div>
+        <div class="checkout-modal-content">
+            <div class="checkout-header">
+                <h2 data-en="Checkout" data-es="Pago">Checkout</h2>
+                <button class="modal-close" onclick="closeCheckoutModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="checkout-body">
+                <!-- Order Summary -->
+                <div class="checkout-summary">
+                    <h3 data-en="Order Summary" data-es="Resumen del Pedido">Order Summary</h3>
+                    <div class="checkout-items" id="checkoutItems">
+                        <!-- Items rendered by JS -->
+                    </div>
+                    <div class="checkout-totals">
+                        <div class="total-row">
+                            <span data-en="Subtotal" data-es="Subtotal">Subtotal</span>
+                            <span id="checkoutSubtotal">$0.00</span>
+                        </div>
+                        <div class="total-row">
+                            <span data-en="Shipping" data-es="Envío">Shipping</span>
+                            <span id="checkoutShipping">$8.00</span>
+                        </div>
+                        <div class="total-row total-final">
+                            <span>Total</span>
+                            <span id="checkoutTotal">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Checkout Steps -->
+                <div class="checkout-payment">
+                    <!-- Step 1: Shipping Information -->
+                    <div class="checkout-step" id="shipping-step">
+                        <h3 data-en="Shipping Information" data-es="Información de Envío">Shipping Information</h3>
+
+                        <form id="shipping-form" class="shipping-form">
+                            <div class="form-group">
+                                <label for="shipping-email" data-en="Email" data-es="Correo">Email</label>
+                                <input type="email" id="shipping-email" placeholder="your@email.com" data-en-placeholder="your@email.com" data-es-placeholder="tu@correo.com" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="shipping-name" data-en="Full Name" data-es="Nombre Completo">Full Name</label>
+                                <input type="text" id="shipping-name" placeholder="John Doe" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="shipping-address" data-en="Address" data-es="Dirección">Address</label>
+                                <input type="text" id="shipping-address" placeholder="123 Main Street" data-en-placeholder="123 Main Street" data-es-placeholder="Calle Principal 123" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="shipping-address2" data-en="Apartment, suite, etc. (optional)" data-es="Apartamento, suite, etc. (opcional)">Apartment, suite, etc. (optional)</label>
+                                <input type="text" id="shipping-address2" placeholder="Apt 4B">
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="shipping-city" data-en="City" data-es="Ciudad">City</label>
+                                    <input type="text" id="shipping-city" placeholder="New York" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="shipping-state" data-en="State" data-es="Estado/Departamento">State</label>
+                                    <input type="text" id="shipping-state" placeholder="NY" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="shipping-zip" data-en="ZIP Code" data-es="Código Postal">ZIP Code</label>
+                                    <input type="text" id="shipping-zip" placeholder="10001" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="shipping-country" data-en="Country" data-es="País">Country</label>
+                                    <select id="shipping-country" required>
+                                        <option value="US" data-en="United States" data-es="Estados Unidos">United States</option>
+                                        <option value="CO" data-en="Colombia" data-es="Colombia">Colombia</option>
+                                        <option value="CA" data-en="Canada" data-es="Canadá">Canada</option>
+                                        <option value="GB" data-en="United Kingdom" data-es="Reino Unido">United Kingdom</option>
+                                        <option value="AU" data-en="Australia" data-es="Australia">Australia</option>
+                                        <option value="DE" data-en="Germany" data-es="Alemania">Germany</option>
+                                        <option value="FR" data-en="France" data-es="Francia">France</option>
+                                        <option value="MX" data-en="Mexico" data-es="México">Mexico</option>
+                                        <option value="AR" data-en="Argentina" data-es="Argentina">Argentina</option>
+                                        <option value="CL" data-en="Chile" data-es="Chile">Chile</option>
+                                        <option value="PE" data-en="Peru" data-es="Perú">Peru</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-primary" data-en="Continue to Payment" data-es="Continuar al Pago">Continue to Payment</button>
+                        </form>
+                    </div>
+
+                    <!-- Step 2: Payment -->
+                    <div class="checkout-step hidden" id="payment-step">
+                        <div class="step-header">
+                            <h3 data-en="Payment Method" data-es="Método de Pago">Payment Method</h3>
+                            <button class="btn-text" onclick="showShippingStep()" data-html data-en="&larr; Edit Shipping" data-es="&larr; Editar Envío">&larr; Edit Shipping</button>
+                        </div>
+
+                        <div class="shipping-summary">
+                            <p class="summary-label" data-en="Shipping to:" data-es="Enviar a:">Shipping to:</p>
+                            <p id="shipping-summary-text"></p>
+                        </div>
+
+                        <!-- Wompi Payment (Colombia: Cards, PSE, Nequi, Daviplata) -->
+                        <div class="wompi-payment">
+                            <p class="payment-section-label" data-en="Pay with Card, PSE, Nequi or Daviplata" data-es="Paga con Tarjeta, PSE, Nequi o Daviplata">Pay with Card, PSE, Nequi or Daviplata</p>
+                            <div class="accepted-methods">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" class="payment-logo">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" class="payment-logo">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg" alt="Amex" class="payment-logo">
+                                <span class="payment-method-text">PSE</span>
+                                <span class="payment-method-text">Nequi</span>
+                            </div>
+                            <button type="button" class="btn-primary wompi-btn" id="wompi-button" onclick="openWompiCheckout()">
+                                <span data-en="Pay with Wompi" data-es="Pagar con Wompi">Pay with Wompi</span>
+                            </button>
+                            <p class="wompi-secure-text" data-en="Secure payment powered by Wompi (Bancolombia)" data-es="Pago seguro con Wompi (Bancolombia)">Secure payment powered by Wompi (Bancolombia)</p>
+                        </div>
+
+                        <div class="payment-divider">
+                            <span data-en="or pay internationally" data-es="o paga internacionalmente">or pay internationally</span>
+                        </div>
+
+                        <!-- PayPal Button (International) -->
+                        <div class="paypal-payment">
+                            <p class="paypal-label" data-en="Pay with PayPal (USD)" data-es="Paga con PayPal (USD)">Pay with PayPal (USD)</p>
+                            <div id="paypal-button-container"></div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Confirmation -->
+                    <div class="checkout-step hidden" id="confirmation-step">
+                        <div class="confirmation-content">
+                            <div class="confirmation-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="16 10 11 15 8 12"></polyline>
+                                </svg>
+                            </div>
+                            <h3 data-en="Thank You!" data-es="¡Gracias!">Thank You!</h3>
+                            <p class="confirmation-message" data-en="Your order has been confirmed." data-es="Tu pedido ha sido confirmado.">Your order has been confirmed.</p>
+                            <p class="confirmation-email"><span data-en="A confirmation email has been sent to" data-es="Se ha enviado un correo de confirmación a">A confirmation email has been sent to</span> <span id="confirmation-email-display"></span></p>
+                            <p class="order-number"><span data-en="Order #" data-es="Pedido #">Order #</span><span id="order-number-display"></span></p>
+                            <button class="btn-primary" onclick="closeCheckoutModal(); showPage('home')" data-en="Continue Shopping" data-es="Seguir Comprando">Continue Shopping</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span id="toastMessage">Added to cart</span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
