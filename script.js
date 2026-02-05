@@ -1,7 +1,7 @@
 /**
  * ARTHAUS - Art Store JavaScript
  * Product data, gallery, cart, checkout with payment integrations
- * Payment providers: Wompi (Colombia: Cards, PSE, Nequi, Daviplata) + PayPal (International)
+ * Payment provider: Wompi (Colombia: Cards, PSE, Nequi, Daviplata)
  */
 
 // ==========================================
@@ -243,80 +243,6 @@ async function openWompiCheckout() {
         showToast(currentLanguage === 'en'
             ? 'Error initializing payment. Please try again.'
             : 'Error al iniciar el pago. Por favor intenta de nuevo.');
-    }
-}
-
-// ==========================================
-// PayPal Initialization
-// ==========================================
-
-function initializePayPal() {
-    if (typeof paypal === 'undefined') {
-        console.log('PayPal SDK not loaded');
-        return;
-    }
-
-    const container = document.getElementById('paypal-button-container');
-    if (!container || container.hasChildNodes()) return;
-
-    try {
-        paypal.Buttons({
-            style: {
-                layout: 'horizontal',
-                color: 'gold',
-                shape: 'rect',
-                label: 'paypal',
-                height: 45
-            },
-            createOrder: async function(data, actions) {
-                try {
-                    const response = await fetch(`${API_BASE_URL}/api/paypal/create-order`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            items: cart.map(item => ({ id: item.id, quantity: item.quantity })),
-                            shipping: shippingInfo
-                        }),
-                    });
-
-                    const orderData = await response.json();
-
-                    if (orderData.error) {
-                        throw new Error(orderData.error);
-                    }
-
-                    return orderData.orderId;
-                } catch (err) {
-                    showToast(currentLanguage === 'en' ? 'Failed to create PayPal order' : 'Error al crear orden de PayPal');
-                    throw err;
-                }
-            },
-            onApprove: async function(data, actions) {
-                try {
-                    const response = await fetch(`${API_BASE_URL}/api/paypal/capture-order`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ orderId: data.orderID }),
-                    });
-
-                    const captureData = await response.json();
-
-                    if (captureData.status === 'COMPLETED') {
-                        handlePaymentSuccess(captureData.orderId);
-                    } else {
-                        showToast(currentLanguage === 'en' ? 'Payment was not completed. Please try again.' : 'El pago no fue completado. Por favor intenta de nuevo.');
-                    }
-                } catch (err) {
-                    showToast(currentLanguage === 'en' ? 'Payment capture failed. Please try again.' : 'Error al capturar el pago. Por favor intenta de nuevo.');
-                }
-            },
-            onError: function(err) {
-                console.error('PayPal Error:', err);
-                showToast(currentLanguage === 'en' ? 'PayPal encountered an error. Please try again.' : 'PayPal encontró un error. Por favor intenta de nuevo.');
-            }
-        }).render('#paypal-button-container');
-    } catch (e) {
-        console.error('Error initializing PayPal:', e);
     }
 }
 
@@ -606,11 +532,6 @@ function showPaymentStep() {
     if (shippingInfo && summaryText) {
         summaryText.textContent = `${shippingInfo.name}, ${shippingInfo.address}, ${shippingInfo.city}, ${shippingInfo.state} ${shippingInfo.zip}`;
     }
-
-    // Initialize PayPal
-    setTimeout(() => {
-        initializePayPal();
-    }, 100);
 }
 
 function showConfirmationStep(orderId) {
