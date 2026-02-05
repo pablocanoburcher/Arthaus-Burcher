@@ -11,9 +11,8 @@
 // API base URL - Vercel serverless functions use /api/ path
 const API_BASE_URL = '';
 
-// Wompi Configuration - Replace with your public key
-// Sandbox: pub_test_XXXXXXXX | Production: pub_prod_XXXXXXXX
-const WOMPI_PUBLIC_KEY = 'pub_test_qK2KWQOsW6WSr2IycRPwZcOeif1amNtl';
+// Wompi Configuration (Production)
+const WOMPI_PUBLIC_KEY = 'pub_prod_3KbWCen3036LsV58opaQeANL52xPU9di';
 
 // Currency: COP for Colombian Pesos
 const WOMPI_CURRENCY = 'COP';
