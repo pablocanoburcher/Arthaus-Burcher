@@ -63,7 +63,10 @@ module.exports = async (req, res) => {
 
         if (!integritySecret) {
             console.error('WOMPI_INTEGRITY_SECRET not configured');
-            return res.status(500).json({ error: 'Payment configuration error' });
+            return res.status(500).json({
+                error: 'Payment configuration error',
+                details: 'WOMPI_INTEGRITY_SECRET environment variable is not set. Please add it in Vercel Dashboard → Settings → Environment Variables.'
+            });
         }
 
         // Generate integrity signature

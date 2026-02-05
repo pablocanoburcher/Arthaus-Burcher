@@ -239,9 +239,10 @@ async function openWompiCheckout() {
 
     } catch (error) {
         console.error('Wompi error:', error);
+        console.error('Error details:', error.message);
         showToast(currentLanguage === 'en'
-            ? 'Error initializing payment. Please try again.'
-            : 'Error al iniciar el pago. Por favor intenta de nuevo.');
+            ? `Error: ${error.message || 'Error initializing payment. Please try again.'}`
+            : `Error: ${error.message || 'Error al iniciar el pago. Por favor intenta de nuevo.'}`);
     }
 }
 
