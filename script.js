@@ -151,8 +151,11 @@ let shippingInfo = null;
 let wompiCheckout = null;
 
 // ==========================================
-// Wompi Payment Integration
+// Wompi Payment Integration (Payment Link)
 // ==========================================
+
+// Wompi generic payment link - customers enter amount manually
+const WOMPI_PAYMENT_LINK = 'https://checkout.wompi.co/l/VPOS_rLDCfS';
 
 function getCartTotalCOP() {
     return cart.reduce((sum, item) => {
@@ -161,7 +164,16 @@ function getCartTotalCOP() {
     }, 0);
 }
 
-async function openWompiCheckout() {
+function formatCOP(amount) {
+    return new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(amount);
+}
+
+function openWompiCheckout() {
     if (!shippingInfo) {
         showToast(currentLanguage === 'en' ? 'Please enter shipping information first' : 'Por favor ingresa la información de envío primero');
         return;
@@ -172,78 +184,79 @@ async function openWompiCheckout() {
         return;
     }
 
-    // Calculate total in COP (cents)
+    // Calculate total in COP
     const subtotalCOP = getCartTotalCOP();
     const totalCOP = subtotalCOP + SHIPPING_COP;
-    const amountInCents = totalCOP * 100; // Wompi requires amount in cents
+    const formattedTotal = formatCOP(totalCOP);
 
-    // Generate unique reference
-    const reference = `ARTHAUS-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    // Generate order reference
+    const reference = `ARTHAUS-${Date.now().toString(36).toUpperCase()}`;
 
-    try {
-        // Get integrity signature from backend
-        const response = await fetch(`${API_BASE_URL}/api/wompi/get-signature`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                reference: reference,
-                amountInCents: amountInCents,
-                currency: WOMPI_CURRENCY
-            })
-        });
+    // Save order details to localStorage
+    const orderDetails = {
+        reference: reference,
+        items: cart.map(item => ({ title: item.title, artist: item.artist, quantity: item.quantity })),
+        subtotal: subtotalCOP,
+        shipping: SHIPPING_COP,
+        total: totalCOP,
+        shippingInfo: shippingInfo,
+        date: new Date().toISOString()
+    };
+    localStorage.setItem('arthaus_pending_order', JSON.stringify(orderDetails));
 
-        const data = await response.json();
-
-        if (data.error) {
-            throw new Error(data.error);
-        }
-
-        // Open Wompi Widget
-        const checkout = new WidgetCheckout({
-            currency: WOMPI_CURRENCY,
-            amountInCents: amountInCents,
-            reference: reference,
-            publicKey: WOMPI_PUBLIC_KEY,
-            signature: { integrity: data.signature },
-            redirectUrl: window.location.origin + '/checkout-result.html',
-            customerData: {
-                email: shippingInfo.email,
-                fullName: shippingInfo.name,
-                phoneNumber: '',
-                phoneNumberPrefix: '+57',
-                legalId: '',
-                legalIdType: 'CC'
-            }
-        });
-
-        checkout.open(function(result) {
-            const transaction = result.transaction;
-
-            if (transaction && transaction.status === 'APPROVED') {
-                handlePaymentSuccess(transaction.id);
-            } else if (transaction && transaction.status === 'PENDING') {
-                showToast(currentLanguage === 'en'
-                    ? 'Payment pending. We will notify you when confirmed.'
-                    : 'Pago pendiente. Te notificaremos cuando sea confirmado.');
-                handlePaymentSuccess(transaction.id);
-            } else if (transaction && transaction.status === 'DECLINED') {
-                showToast(currentLanguage === 'en'
-                    ? 'Payment declined. Please try again.'
-                    : 'Pago rechazado. Por favor intenta de nuevo.');
-            } else if (transaction && transaction.status === 'ERROR') {
-                showToast(currentLanguage === 'en'
-                    ? 'Payment error. Please try again.'
-                    : 'Error en el pago. Por favor intenta de nuevo.');
-            }
-            // If user closes widget without completing, nothing happens
-        });
-
-    } catch (error) {
-        console.error('Wompi error:', error);
-        showToast(currentLanguage === 'en'
-            ? 'Error initializing payment. Please try again.'
-            : 'Error al iniciar el pago. Por favor intenta de nuevo.');
+    // Show payment instructions in the payment step
+    const wompiPaymentDiv = document.querySelector('.wompi-payment');
+    if (wompiPaymentDiv) {
+        wompiPaymentDiv.innerHTML = `
+            <div style="text-align: center; padding: 1rem 0;">
+                <h4 style="font-family: var(--font-serif); font-size: 1.25rem; margin-bottom: 1rem;">
+                    ${currentLanguage === 'en' ? 'Payment Instructions' : 'Instrucciones de Pago'}
+                </h4>
+                <div style="background: var(--color-bg-primary); border: 2px solid var(--color-accent); padding: 1.5rem; margin-bottom: 1rem; border-radius: 4px;">
+                    <p style="font-size: 0.875rem; color: var(--color-text-secondary); margin-bottom: 0.5rem;">
+                        ${currentLanguage === 'en' ? 'Total to pay:' : 'Total a pagar:'}
+                    </p>
+                    <strong style="font-size: 1.75rem; color: var(--color-accent);">${formattedTotal}</strong>
+                </div>
+                <div style="background: var(--color-bg-tertiary); padding: 0.75rem; margin-bottom: 1rem; border-radius: 4px;">
+                    <p style="font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: 0.25rem;">
+                        ${currentLanguage === 'en' ? 'Reference:' : 'Referencia:'}
+                    </p>
+                    <code style="font-family: monospace; color: var(--color-text-primary);">${reference}</code>
+                </div>
+                <ol style="text-align: left; padding-left: 1.25rem; margin-bottom: 1rem; font-size: 0.875rem; color: var(--color-text-secondary);">
+                    <li style="margin-bottom: 0.5rem;">${currentLanguage === 'en' ? 'Click the button below to open Wompi' : 'Haz clic en el botón para abrir Wompi'}</li>
+                    <li style="margin-bottom: 0.5rem;">${currentLanguage === 'en' ? 'Enter the exact amount shown above' : 'Ingresa el monto exacto mostrado arriba'}</li>
+                    <li style="margin-bottom: 0.5rem;">${currentLanguage === 'en' ? 'Add the reference in description' : 'Agrega la referencia en la descripción'}</li>
+                    <li>${currentLanguage === 'en' ? 'Complete payment with your preferred method' : 'Completa el pago con tu método preferido'}</li>
+                </ol>
+                <button type="button" class="btn-primary wompi-btn" onclick="goToWompiPayment()" style="width: 100%;">
+                    ${currentLanguage === 'en' ? 'Go to Wompi Payment' : 'Ir al Pago Wompi'} →
+                </button>
+                <p style="font-size: 0.75rem; color: var(--color-text-muted); margin-top: 1rem;">
+                    ${currentLanguage === 'en' ? 'After payment, send your receipt to confirm your order.' : 'Después del pago, envía tu recibo para confirmar tu pedido.'}
+                </p>
+            </div>
+        `;
     }
+}
+
+function goToWompiPayment() {
+    // Open Wompi payment link in new tab
+    window.open(WOMPI_PAYMENT_LINK, '_blank');
+
+    // Show confirmation message
+    showToast(currentLanguage === 'en'
+        ? 'Wompi payment page opened. Complete your payment there.'
+        : 'Página de pago Wompi abierta. Completa tu pago allí.');
+
+    // Clear cart
+    clearCart();
+
+    // Show confirmation step
+    setTimeout(() => {
+        showConfirmationStep('PENDING');
+    }, 1000);
 }
 
 // ==========================================
@@ -790,3 +803,4 @@ window.showShippingStep = showShippingStep;
 window.closeMobileMenu = closeMobileMenu;
 window.toggleLanguage = toggleLanguage;
 window.openWompiCheckout = openWompiCheckout;
+window.goToWompiPayment = goToWompiPayment;
