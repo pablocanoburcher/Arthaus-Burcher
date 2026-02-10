@@ -181,6 +181,7 @@ async function openWompiCheckout() {
 
     try {
         // Get integrity signature from backend
+        console.log('Calling Wompi signature API...');
         const response = await fetch(`${API_BASE_URL}/api/wompi/get-signature`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -191,11 +192,27 @@ async function openWompiCheckout() {
             })
         });
 
+        console.log('API response status:', response.status);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('API error response:', errorText);
+            throw new Error(`API Error (${response.status}): ${errorText}`);
+        }
+
         const data = await response.json();
+        console.log('API response data:', data);
 
         if (data.error) {
-            throw new Error(data.error);
+            throw new Error(data.details || data.error);
         }
+
+        // Verify Wompi widget is loaded
+        if (typeof WidgetCheckout === 'undefined') {
+            throw new Error('Wompi widget not loaded. Please refresh the page.');
+        }
+
+        console.log('Opening Wompi widget with signature:', data.signature.substring(0, 10) + '...');
 
         // Open Wompi Widget
         const checkout = new WidgetCheckout({
