@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-ARTHAUS is a bilingual (English/Spanish) art print e-commerce store built for deployment on Vercel. It sells music-inspired art prints with payment processing through Wompi (for Colombia) and PayPal (international).
+ARTHAUS is a bilingual (English/Spanish) art print e-commerce store built for deployment on Vercel. It sells music-inspired art prints with payment processing through Wompi (Colombia, COP payments).
 
 ## Commands
 
@@ -30,16 +30,18 @@ python3 -m http.server 8000
 - **styles.css** - Dark theme with CSS variables in `:root`
 
 ### Backend (Vercel Serverless Functions)
-All API endpoints are in `/api/` as individual serverless functions:
-- `api/wompi/get-signature.js` - Wompi integrity signature generation for secure payments
-- `api/paypal/create-order.js` - PayPal order creation
-- `api/paypal/capture-order.js` - PayPal payment capture
+API endpoints are in `/api/` as individual serverless functions:
+- `api/wompi/get-signature.js` - Wompi integrity signature generation (SHA256) for secure payments
+
+### Deployment Configuration
+- **vercel.json** - Defines build rules and routes for Vercel (static files + serverless API functions)
+- **server.js** - Express server for local development only (not used in Vercel production). Contains legacy Stripe/PayPal code that is not active.
 
 ### Key Patterns
 
 **Bilingual Support**: Uses `data-en` and `data-es` attributes on HTML elements. The `applyLanguage()` function in script.js switches content. For elements containing HTML tags (like `<br>`, `<em>`, `<a>`), add `data-html` attribute to use innerHTML instead of textContent.
 
-**Product Data**: Products are defined in both frontend (`script.js`) and duplicated in each API file for server-side validation. Keep these in sync when modifying products. Products include both USD price (`price`) and COP price (`priceCOP`).
+**Product Data**: Products are defined in the frontend (`script.js`) and duplicated in `api/wompi/get-signature.js` for server-side validation. Keep these in sync when modifying products. Products include both USD price (`price`) and COP price (`priceCOP`). There are currently 5 products.
 
 **Page Navigation**: Single HTML file with multiple `<main id="page-{name}">` sections. `showPage()` function toggles visibility.
 
@@ -49,31 +51,36 @@ All API endpoints are in `/api/` as individual serverless functions:
 
 ```
 # Wompi (Colombia)
-WOMPI_PUBLIC_KEY=pub_prod_XXXXXXXX
 WOMPI_INTEGRITY_SECRET=prod_integrity_XXXXXXXX
-
-# PayPal (International)
-PAYPAL_CLIENT_ID
-PAYPAL_CLIENT_SECRET
 ```
+
+Note: `WOMPI_PUBLIC_KEY` is hardcoded in `script.js`. Only `WOMPI_INTEGRITY_SECRET` is needed as a server-side environment variable.
 
 ## Payment Integration Notes
 
-### Wompi (Colombia)
-- **Widget integration** - Opens Wompi popup for payment
+### Wompi (Colombia) - Sole Payment Provider
+- **Payment link integration** - Redirects customer to Wompi checkout page (`checkout.wompi.co`)
+- Checkout flow: customer sees total in COP + reference code, then clicks through to Wompi to complete payment
 - Supports: Credit/Debit Cards (Visa, Mastercard, Amex), PSE, Nequi, Daviplata
-- Prices in COP (Colombian Pesos) - converted to cents for API
-- Requires integrity signature generated server-side (SHA256)
+- Prices in COP (Colombian Pesos) - shipping is 32,000 COP
+- Integrity signature generated server-side via `api/wompi/get-signature.js` (SHA256)
+- Wompi is powered by Bancolombia
 - Get credentials at: https://comercios.wompi.co/
 - Documentation: https://docs.wompi.co/
-
-### PayPal (International)
-- For customers outside Colombia paying in USD
-- PayPal SDK loaded in index.html
-- Replace `YOUR_PAYPAL_CLIENT_ID` with actual client ID in the script tag
-
-### Important
-- **Stripe is NOT available in Colombia** - not used
-- Wompi is powered by Bancolombia - reliable for Colombian market
 - Test mode keys start with `pub_test_` and `test_integrity_`
 - Production keys start with `pub_prod_` and `prod_integrity_`
+
+### Removed Integrations
+- **PayPal** was previously integrated but has been removed (PR #2). No serverless functions or frontend code remain.
+- **Stripe is NOT available in Colombia** and was never used in production.
+- Legacy PayPal/Stripe code exists only in `server.js` (local dev Express server) and is not active.
+
+## Pages
+
+The SPA contains these pages (`<main id="page-{name}">` sections):
+- **home** - Hero, featured products, about preview
+- **about** - Brand philosophy (human-made, music-inspired, Colombian soul)
+- **catalogue** - Product gallery with category filters (All, Hip-Hop, R&B, Miscellaneous)
+- **personalized** - Bespoke design request form with file upload
+- **contact** - Email, studio location (Medellín), Instagram, newsletter signup
+- **refunds** - Return/refund policy
