@@ -2120,3 +2120,107 @@ body {
         gap: 2rem;
     }
 }
+
+/* ==========================================
+   Payment Instructions (Wompi Link)
+   ========================================== */
+.payment-instructions {
+    text-align: center;
+    padding: 1rem 0;
+}
+
+.payment-instructions h3 {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+    color: var(--color-text-primary);
+}
+
+.payment-amount {
+    background: var(--color-bg-primary);
+    border: 2px solid var(--color-accent);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 4px;
+}
+
+.payment-amount p {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.payment-amount strong {
+    font-size: 2rem;
+    font-family: var(--font-serif);
+    color: var(--color-accent);
+    display: block;
+}
+
+.payment-reference {
+    background: var(--color-bg-tertiary);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 4px;
+}
+
+.payment-reference p {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.payment-reference code {
+    font-family: monospace;
+    font-size: 1rem;
+    color: var(--color-text-primary);
+    letter-spacing: 0.05em;
+}
+
+.payment-steps {
+    text-align: left;
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.payment-steps li {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+}
+
+.wompi-pay-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #00d9a5 0%, #00b48a 100%);
+    color: #fff;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-base);
+    border-radius: 4px;
+}
+
+.wompi-pay-btn:hover {
+    background: linear-gradient(135deg, #00f5bb 0%, #00d9a5 100%);
+    transform: translateY(-1px);
+}
+
+.wompi-pay-btn svg {
+    flex-shrink: 0;
+}
+
+.payment-note {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+}

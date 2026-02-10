@@ -151,8 +151,11 @@ let shippingInfo = null;
 let wompiCheckout = null;
 
 // ==========================================
-// Wompi Payment Integration
+// Wompi Payment Integration (Payment Link)
 // ==========================================
+
+// Wompi generic payment link
+const WOMPI_PAYMENT_LINK = 'https://checkout.wompi.co/l/VPOS_rLDCfS';
 
 function getCartTotalCOP() {
     return cart.reduce((sum, item) => {
@@ -161,7 +164,16 @@ function getCartTotalCOP() {
     }, 0);
 }
 
-async function openWompiCheckout() {
+function formatCOP(amount) {
+    return new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(amount);
+}
+
+function openWompiCheckout() {
     if (!shippingInfo) {
         showToast(currentLanguage === 'en' ? 'Please enter shipping information first' : 'Por favor ingresa la información de envío primero');
         return;
@@ -172,78 +184,108 @@ async function openWompiCheckout() {
         return;
     }
 
-    // Calculate total in COP (cents)
+    // Calculate total in COP
     const subtotalCOP = getCartTotalCOP();
     const totalCOP = subtotalCOP + SHIPPING_COP;
-    const amountInCents = totalCOP * 100; // Wompi requires amount in cents
 
-    // Generate unique reference
-    const reference = `ARTHAUS-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    // Generate order reference
+    const reference = `ARTHAUS-${Date.now().toString(36).toUpperCase()}`;
 
-    try {
-        // Get integrity signature from backend
-        const response = await fetch(`${API_BASE_URL}/api/wompi/get-signature`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                reference: reference,
-                amountInCents: amountInCents,
-                currency: WOMPI_CURRENCY
-            })
-        });
+    // Save order details to localStorage for reference
+    const orderDetails = {
+        reference: reference,
+        items: cart.map(item => ({
+            title: item.title,
+            artist: item.artist,
+            quantity: item.quantity,
+            priceCOP: item.priceCOP
+        })),
+        subtotal: subtotalCOP,
+        shipping: SHIPPING_COP,
+        total: totalCOP,
+        shippingInfo: shippingInfo,
+        date: new Date().toISOString()
+    };
+    localStorage.setItem('arthaus_pending_order', JSON.stringify(orderDetails));
 
-        const data = await response.json();
+    // Show payment instructions modal
+    showPaymentInstructions(totalCOP, reference);
+}
 
-        if (data.error) {
-            throw new Error(data.error);
-        }
+function showPaymentInstructions(totalCOP, reference) {
+    const formattedTotal = formatCOP(totalCOP);
 
-        // Open Wompi Widget
-        const checkout = new WidgetCheckout({
-            currency: WOMPI_CURRENCY,
-            amountInCents: amountInCents,
-            reference: reference,
-            publicKey: WOMPI_PUBLIC_KEY,
-            signature: { integrity: data.signature },
-            redirectUrl: window.location.origin + '/checkout-result.html',
-            customerData: {
-                email: shippingInfo.email,
-                fullName: shippingInfo.name,
-                phoneNumber: '',
-                phoneNumberPrefix: '+57',
-                legalId: '',
-                legalIdType: 'CC'
-            }
-        });
+    const instructionsHTML = `
+        <div class="payment-instructions">
+            <h3 data-en="Payment Instructions" data-es="Instrucciones de Pago">
+                ${currentLanguage === 'en' ? 'Payment Instructions' : 'Instrucciones de Pago'}
+            </h3>
+            <div class="payment-amount">
+                <p data-en="Total to pay:" data-es="Total a pagar:">
+                    ${currentLanguage === 'en' ? 'Total to pay:' : 'Total a pagar:'}
+                </p>
+                <strong>${formattedTotal}</strong>
+            </div>
+            <div class="payment-reference">
+                <p data-en="Reference:" data-es="Referencia:">
+                    ${currentLanguage === 'en' ? 'Reference:' : 'Referencia:'}
+                </p>
+                <code>${reference}</code>
+            </div>
+            <ol class="payment-steps">
+                <li data-en="Click the button below to open Wompi payment" data-es="Haz clic en el botón para abrir el pago de Wompi">
+                    ${currentLanguage === 'en' ? 'Click the button below to open Wompi payment' : 'Haz clic en el botón para abrir el pago de Wompi'}
+                </li>
+                <li data-en="Enter the exact amount shown above" data-es="Ingresa el monto exacto mostrado arriba">
+                    ${currentLanguage === 'en' ? 'Enter the exact amount shown above' : 'Ingresa el monto exacto mostrado arriba'}
+                </li>
+                <li data-en="Complete the payment with your preferred method" data-es="Completa el pago con tu método preferido">
+                    ${currentLanguage === 'en' ? 'Complete the payment with your preferred method' : 'Completa el pago con tu método preferido'}
+                </li>
+                <li data-en="Add the reference in the description" data-es="Agrega la referencia en la descripción">
+                    ${currentLanguage === 'en' ? 'Add the reference in the description' : 'Agrega la referencia en la descripción'}
+                </li>
+            </ol>
+            <button class="wompi-pay-btn" onclick="goToWompiPayment()">
+                <span data-en="Go to Wompi Payment" data-es="Ir al Pago Wompi">
+                    ${currentLanguage === 'en' ? 'Go to Wompi Payment' : 'Ir al Pago Wompi'}
+                </span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+            </button>
+            <p class="payment-note" data-en="After payment, send your receipt to our WhatsApp for order confirmation." data-es="Después del pago, envía tu recibo a nuestro WhatsApp para confirmar tu pedido.">
+                ${currentLanguage === 'en' ? 'After payment, send your receipt to our WhatsApp for order confirmation.' : 'Después del pago, envía tu recibo a nuestro WhatsApp para confirmar tu pedido.'}
+            </p>
+        </div>
+    `;
 
-        checkout.open(function(result) {
-            const transaction = result.transaction;
-
-            if (transaction && transaction.status === 'APPROVED') {
-                handlePaymentSuccess(transaction.id);
-            } else if (transaction && transaction.status === 'PENDING') {
-                showToast(currentLanguage === 'en'
-                    ? 'Payment pending. We will notify you when confirmed.'
-                    : 'Pago pendiente. Te notificaremos cuando sea confirmado.');
-                handlePaymentSuccess(transaction.id);
-            } else if (transaction && transaction.status === 'DECLINED') {
-                showToast(currentLanguage === 'en'
-                    ? 'Payment declined. Please try again.'
-                    : 'Pago rechazado. Por favor intenta de nuevo.');
-            } else if (transaction && transaction.status === 'ERROR') {
-                showToast(currentLanguage === 'en'
-                    ? 'Payment error. Please try again.'
-                    : 'Error en el pago. Por favor intenta de nuevo.');
-            }
-            // If user closes widget without completing, nothing happens
-        });
-
-    } catch (error) {
-        console.error('Wompi error:', error);
-        showToast(currentLanguage === 'en'
-            ? 'Error initializing payment. Please try again.'
-            : 'Error al iniciar el pago. Por favor intenta de nuevo.');
+    // Update the payment step content
+    const paymentStep = document.getElementById('payment-step');
+    const wompiPayment = paymentStep.querySelector('.wompi-payment');
+    if (wompiPayment) {
+        wompiPayment.innerHTML = instructionsHTML;
     }
+}
+
+function goToWompiPayment() {
+    // Open Wompi payment link in new tab
+    window.open(WOMPI_PAYMENT_LINK, '_blank');
+
+    // Show confirmation message
+    showToast(currentLanguage === 'en'
+        ? 'Wompi payment page opened. Complete your payment there.'
+        : 'Página de pago Wompi abierta. Completa tu pago allí.');
+
+    // Clear cart after opening payment
+    clearCart();
+
+    // Show thank you message
+    setTimeout(() => {
+        showConfirmationStep('PENDING');
+    }, 1000);
 }
 
 // ==========================================
@@ -790,3 +832,4 @@ window.showShippingStep = showShippingStep;
 window.closeMobileMenu = closeMobileMenu;
 window.toggleLanguage = toggleLanguage;
 window.openWompiCheckout = openWompiCheckout;
+window.goToWompiPayment = goToWompiPayment;
